@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>VIMUL-JKD IMCU Employee Attendance</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+background:#f5f5f5;
+margin:0;
+padding:20px;
+}
+
+.logo{
+margin-top:20px;
+}
+
+.logo img{
+width:120px;
+}
+
+h2{
+color:#2c3e50;
+margin-top:10px;
+}
+
+input{
+padding:12px;
+font-size:16px;
+width:230px;
+margin-top:20px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+button{
+padding:12px 25px;
+font-size:16px;
+margin:10px;
+border:none;
+background:#2c3e50;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#34495e;
+}
+
+#status{
+margin-top:15px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="logo">
+<img src="logo.png">
+</div>
+
+<h2>Jamkandi IMCU Employee Attendance</h2>
+
+<input type="text" id="name" placeholder="Enter Name">
+
+<br>
+
+<button onclick="sendData('Login')">Login</button>
+<button onclick="sendData('Logout')">Logout</button>
+
+<p id="status"></p>
+
+<script>
+
+function sendData(action){
+
+var name = document.getElementById("name").value;
+
+if(name==""){
+alert("Please enter your name");
+return;
+}
+
+document.getElementById("status").innerHTML="📍 Getting location...";
+
+if(!navigator.geolocation){
+alert("Geolocation not supported");
+return;
+}
+
+navigator.geolocation.getCurrentPosition(
+
+function(position){
+
+var lat = position.coords.latitude;
+var lon = position.coords.longitude;
+
+document.getElementById("status").innerHTML="⏳ Sending attendance...";
+
+fetch("https://script.google.com/macros/s/AKfycbzaNdsEC9V_CmbOX1falVGm4dH6EHknL833by9lAkRU3SvFwaV3nzwL1LDDES_kfb-P/exec",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+
+body:
+"name="+encodeURIComponent(name)+
+"&action="+encodeURIComponent(action)+
+"&lat="+encodeURIComponent(lat)+
+"&lon="+encodeURIComponent(lon)
+
+})
+
+.then(function(response){
+return response.text();
+})
+
+.then(function(data){
+
+document.getElementById("status").innerHTML="✅ Attendance Recorded";
+
+})
+
+.catch(function(error){
+
+document.getElementById("status").innerHTML="❌ Error sending data";
+
+});
+
+},
+
+function(error){
+
+alert("⚠ Location permission required to mark attendance");
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
